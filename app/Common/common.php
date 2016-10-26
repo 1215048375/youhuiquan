@@ -332,7 +332,7 @@ function utf8( $string, $code = "" ){
 }
 
 function attach($attach, $type) {
-    if (false === strpos($attach, 'http://')) {
+    if (false === strpos($attach, 'http://')&&false === strpos($attach, 'https://')) {
         //本地附件
         return __ROOT__ . '/' . C('ftx_attach_path') . $type . '/' . $attach;
         //远程附件
@@ -367,10 +367,10 @@ function get_id($url) {
  * 获取缩略图
  */
 function get_thumb($img, $suffix = '_thumb') {
-	$img = str_replace("https", "http", $img);	
-    if (false === strpos($img, 'http://')) {
+    $img = str_replace("_400x400q90.jpg", "", $img);
+    if (false === strpos($img, 'http://') && false === strpos($img, 'https://')) {    
         $ext = array_pop(explode('.', $img));
-        $thumb = str_replace('.' . $ext, $suffix . '.' . $ext, $img);
+        $thumb = $img;
     } else {
         if (false !== strpos($img, 'taobaocdn.com') || false !== strpos($img, 'taobao.com') || false !== strpos($img, 'alicdn.com')|| false !== strpos($img, 'tbcdn.cn')) {
             //淘宝图片 _s _m _b
@@ -515,7 +515,7 @@ function id_num($in,$to_num = false,$pad_up = false,$passKey = null)  {
         }
         return $out;
 }
-     function check_cookies($url){
+     function check_cookies($url){	        		
 	        $cookies = C('ftx_cookie');
 		  	$search = array(" ","　","\n","\r","\t");  $replace = array("","","","","");  
 			$cookies = str_replace($search, $replace, $cookies); 
@@ -545,7 +545,13 @@ function id_num($in,$to_num = false,$pad_up = false,$passKey = null)  {
 			$ckunt = curl_exec($chu);
 			curl_close($chu);		
 			$ckapi = json_decode($ckunt,true);
-			$id = $ckapi['data']['memberid'];						
+			$jjs = get_headers($url);
+			$code = strpos($jjs[0],'302');
+			if($code){
+			$id = 'alimama';	
+			}else{
+			$id = $ckapi['data']['memberid'];	
+			}
 		    return $id;
 	  }
    function getquaninfo($sellerid,$activityid){

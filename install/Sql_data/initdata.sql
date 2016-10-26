@@ -103,7 +103,6 @@ INSERT INTO `yhq_menu` (`id`, `name`, `pid`, `module_name`, `action_name`, `data
 (43, '顶部导航', 41, 'nav', 'index', '&type=top', '', 0, 2, 1),
 (44, '商品采集', 58, 'item_collect', 'index', '', '', 0, 1, 1),
 (83, '采集设置', 44, 'setting', 'index', '&type=robot', '', 0, 0, 1),
-(82, '大淘客采集', 44, 'dtk', 'index', '', '', 0, 2, 1),
 (45, '鹊桥采集', 44, 'quelist', 'index', '', '', 0, 255, 1),
 (46, 'API接口', 51, 'items_site', 'index', '', '', 0, 1, 1),
 (47, '商品来源', 57, 'items_orig', 'index', '', '', 0, 6, 1),

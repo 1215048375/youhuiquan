@@ -13,9 +13,18 @@
 				<td><input type="text" name="setting[coupon_add_time]" size="10" class="input-text" value="{:C('ftx_coupon_add_time')}" />&nbsp;&nbsp;小时&nbsp;&nbsp;<span class="gray">一般72小时，三天过期（采集的时候自动设置）</span></td>
 			</tr>
 			<tr>
+ 			<th width="150">代理IP设置（采集用） :</th>
+			<td><input type="text" name="setting[daili]"  id="daili" class="input-text" value="{:C('ftx_daili')}"/>&nbsp;&nbsp;<input type="button" value="测试连接" id="J_daili" class="btn">
+			<span class="red ml10" id="msg">填写格式如：112.25.41.136:80（ip+半角分号+端口），填写之后点击测试连接，根据成功次数和失败次数来判断是否可用。免费代理IP：<a href="http://www.xicidaili.com/" target="_blank">http://www.xicidaili.com/</a></span>
+			</td>
+			</tr>
+			<tr>
+				<th width="150">最低佣金限制 :</th>
+				<td><input type="text" name="setting[lastyj]" size="10" class="input-text" value="{:C('ftx_lastyj')}" />&nbsp;元以上&nbsp;&nbsp;&nbsp;<span class="gray">部分采集器采集时有效</span></td>
+			</tr>
+			<tr>
 				<th width="150">设置阿里妈妈cookie :</th>
-				<td><textarea rows="10" cols="100" name="setting[cookie]">{:C('ftx_cookie')}</textarea>&nbsp;&nbsp;&nbsp;
-				</td>
+				<td><textarea rows="10" cols="100" name="setting[cookie]">{:C('ftx_cookie')}</textarea>&nbsp;&nbsp;&nbsp;</td>
 			</tr>	
 		  <tr>
           <th width="150">鹊桥PID :</th>		  
@@ -26,18 +35,16 @@
 		  <tr>
           <th width="150">高佣PID :</th>		  
 		  <td><input type="text" name="setting[youpid]" value="{:C('ftx_youpid')}" class="input-text" size="40"/>
-          </td>
+		  &nbsp;&nbsp;&nbsp;
+          </td>		  
           </tr>
 		  <tr>
 		  <tr>
 				<th width="150">大淘客cookies :</th>
-				<td><textarea rows="3" cols="100" name="setting[dtkcookies]" >{:C('ftx_dtkcookies')}</textarea> &nbsp;&nbsp;
-				</td>
+				<td><textarea rows="3" cols="100" name="setting[dtkcookies]" >{:C('ftx_dtkcookies')}</textarea> &nbsp;&nbsp;</td>
 			</tr>
 				<th width="150">大淘客优惠券APPKEY :</th>
-				<td><input type="text" name="setting[dtk]" size="20" class="input-text" value="{:C('ftx_dtk')}" />&nbsp;&nbsp;
-					<span class="gray"><a href="http://www.dataoke.com/ucenter/appkey_apply.asp" target="_blank">点此申请</a></span>
-				</td>
+				<td><input type="text" name="setting[dtk]" size="20" class="input-text" value="{:C('ftx_dtk')}" />&nbsp;&nbsp;<span class="gray"><a href="http://www.dataoke.com/ucenter/appkey_apply.asp" target="_blank">点此申请</a></span></td>
 			</tr>
 			<tr>
 				<th>大淘客分类绑定 :</th>
@@ -55,5 +62,21 @@
 	<br><br><br><br><br><br>
 </div>
 <include file="public:footer" />
+<script type="text/javascript">
+$('#J_daili').live('click', function() {
+		var ip = $.trim($('#daili').val());
+		if(ip == ''){
+			$.yangtata.tip({content:'请输入正确的代理IP', icon:'alert'});
+			return false;
+		}
+		$.getJSON('{:U("dataoke/check_ip")}', {ip:ip}, function(result){
+			if(result.status == 1){
+			document.getElementById("msg").innerHTML = result.data;				
+			}else{
+				$.yangtata.tip({content:result.msg});
+			}
+		});
+	});
+</script>
 </body>
 </html>

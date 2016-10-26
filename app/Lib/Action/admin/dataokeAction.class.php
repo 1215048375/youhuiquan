@@ -7,389 +7,479 @@ class dataokeAction extends BackendAction
 	}
 	public function index()
 	{
-		$zym_68 = C('ftx_dtk');
-		if(!$zym_68)
+		$zym_78 = C('ftx_dtk');
+		if(!$zym_78)
 		{
-            $zym_67 = '';
+			$zym_77 = '您还没有设置大淘客appkey，请先到大淘客平台申请,<span class="red"><a href="http://www.dataoke.com/ucenter/appkey_apply.asp" target="_blank">点此申请</a></span>,再到网站后台采集设置中填写。';
 		}
 		else
 		{
-            $zym_67 = '';
+			$zym_77 = '杨他他淘宝客与嗨推网大淘客平台数据合作，可通过大淘客API接口采集内部优惠券及商品数据，<span class="red"><a href="http://bbs.yangtata.com/forum.php?mod=viewthread&tid=5084" target="_blank">点此查看采集教程 </a></span>';
 		}
-		$this->assign('info', $zym_67);
+		$this->assign('info', $zym_77);
 		$this->display();
 	}
 	public function setting()
 	{
 		if(IS_POST)
 		{
-			$zym_66 = C('ftx_fz');
-			$zym_70 = I('page','','intval');
-			if(!$zym_66)
+			$zym_75 = C('ftx_fz');
+			$zym_76 = I('page','','intval');
+			$zym_80 = I('mod','','intval');
+			$zym_81 = C('ftx_youpid');
+			if(!$zym_75)
 			{
 				$this->ajaxReturn(0, '请先在采集设置中绑定分类ID!');
 			}
-			F('dataoke_setting', array( 'page' => $zym_70, ));
+			F('dataoke_setting', array( 'page' => $zym_76, 'mod' => $zym_80, 'hightpid' => $zym_81, ));
 			$this->collect();
 		}
 	}
 	public function collect() 
 	{
-		if (false === $zym_71 = F('dataoke_setting')) 
+		if (false === $zym_86 = F('dataoke_setting')) 
 		{
 			$this->ajaxReturn(0, L('illegal_parameters'));
 		}
-		$zym_75 = check_cookies('http://pub.alimama.com/common/getUnionPubContextInfo.json');
-		if(!$zym_75)
+		$zym_80 = $zym_86['mod'];
+		$zym_85 =C('ftx_lastyj');
+		if($zym_80==2 || $zym_80 == 3)
 		{
-			$this->ajaxReturn(0, '登陆超时！请重新获取cookies，否则获取不到推广链接。');
+			$zym_84 = check_cookies('http://pub.alimama.com/common/getUnionPubContextInfo.json');
+			if(!$zym_84)
+			{
+				$this->ajaxReturn(0, '登陆超时！请重新获取阿里妈妈cookies，否则获取不到推广链接。');
+			}
 		}
-		$zym_70 = $zym_71['page'];
-		$zym_74 = array( 'dataoke_file'=> FTX_DATA_PATH.'cookies/dataoke2.txt', );
-		$zym_73 = $this->_get('p', 'intval', $zym_70);
-		if($zym_73==1)
+		$zym_76 = $zym_86['page'];
+		$zym_82 = array( 'dataoke_file'=> FTX_DATA_PATH.'cookies/dataoke2.txt', );
+		$zym_83 = $this->_get('p', 'intval', $zym_76);
+		if($zym_83==1)
 		{
-			$zym_72 = 0;
+			$zym_74 = 0;
 		}
 		else
 		{
 			if(F('totalcoll'))
 			{
-				$zym_72 = F('totalcoll');
+				$zym_74 = F('totalcoll');
 			}
 			else
 			{
-				$zym_72 = 0;
+				$zym_74 = 0;
 			}
 		}
-		$zym_65 = file_get_contents($zym_74['dataoke_file']);
-		if(!$zym_65 && $zym_65 = '操作异常！')
+		$zym_73 = http($zym_82['dataoke_file']);
+		if(!$zym_73 && $zym_73 = '操作异常！')
 		{
 			$this->ajaxReturn(0, '请先获取数据。');
 		}
 		else
 		{
-			$zym_64 = json_decode($zym_65,true);
-			$zym_57 = count($zym_64);
-			$zym_56 = $zym_73 - 1;
-			$zym_55 = $zym_56*1;
-			$zym_53 = $zym_73*1;
-			$zym_54=0;
-			if($zym_57)
+			$zym_64 = json_decode($zym_73,true);
+			$zym_65 = count($zym_64);
+			$zym_63 = $zym_83 - 1;
+			$zym_62 = $zym_63*1;
+			$zym_60 = $zym_83*1;
+			$zym_61=0;
+			if($zym_65)
 			{
-				for($zym_58=$zym_55;$zym_58<$zym_53;$zym_58++)
+				for($zym_66=$zym_62;$zym_66<$zym_60;$zym_66++)
 				{
-					$zym_59 = $zym_64[$zym_58]['Org_Price'];
-					$zym_63 = $zym_64[$zym_58]['Price'];
-					$zym_62 = $zym_64[$zym_58]['IsTmall'];
-					if($zym_62)
+					$zym_67 = $zym_64[$zym_66]['Org_Price'];
+					$zym_72 = $zym_64[$zym_66]['Price'];
+					$zym_71 = $zym_64[$zym_66]['IsTmall'];
+					if($zym_71)
 					{
-						$zym_61 = 'B';
+						$zym_70 = 'B';
 					}
 					else
 					{
-						$zym_61 = 'C';
+						$zym_70 = 'C';
 					}
-					$zym_60 = $zym_64[$zym_58]['Quan_time'];
-					$zym_60 = str_replace('00:00:00','',$zym_60);
-					$zym_76 = $zym_64[$zym_58]['Quan_surplus'];
-					$zym_77 = $zym_64[$zym_58]['Quan_receive'];
-					$zym_94 = $zym_64[$zym_58]['Quan_price'];
-					$zym_93 = $zym_64[$zym_58]['Quan_condition'];
-					$zym_92 = $zym_64[$zym_58]['SellerID'];
-					$zym_91 =$zym_64[$zym_58]['Cid'];
-					$zym_95 =$zym_64[$zym_58]['GoodsID'];
-					$zym_96 = $zym_64[$zym_58]['Quan_id'];
-					$zym_101 = $zym_64[$zym_58]['Sales_num'];
-					$zym_99 =$zym_64[$zym_58]['Introduce'];
-					$zym_98 =$zym_64[$zym_58]['Pic'];
-					$zym_97 =$zym_64[$zym_58]['Title'];
-					$zym_100 = $zym_64[$zym_58]['Commission'];
-					$zym_90 = $zym_64[$zym_58]['Commission_jihua'];
-					$zym_82 = $zym_64[$zym_58]['Commission_queqiao'];
-					$zym_81 = $zym_64[$zym_58]['Jihua_link'];
-					if($zym_81)
+					$zym_68 = $zym_64[$zym_66]['Quan_time'];
+					$zym_68 = str_replace('00:00:00','',$zym_68);
+					$zym_69 = $zym_64[$zym_66]['Quan_surplus'];
+					$zym_88 = $zym_64[$zym_66]['Quan_receive'];
+					$zym_112 = $zym_64[$zym_66]['Quan_price'];
+					$zym_107 = $zym_64[$zym_66]['Quan_condition'];
+					$zym_106 = $zym_64[$zym_66]['SellerID'];
+					$zym_105 =$zym_64[$zym_66]['Cid'];
+					$zym_103 =$zym_64[$zym_66]['GoodsID'];
+					$zym_104 = $zym_64[$zym_66]['Quan_id'];
+					$zym_108 = $zym_64[$zym_66]['Sales_num'];
+					$zym_109 =$zym_64[$zym_66]['Introduce'];
+					$zym_115 =$zym_64[$zym_66]['Pic'];
+					$zym_114 =$zym_64[$zym_66]['Title'];
+					$zym_113 = $zym_64[$zym_66]['Commission'];
+					$zym_110 = $zym_64[$zym_66]['Commission_jihua'];
+					$zym_111 = $zym_64[$zym_66]['Commission_queqiao'];
+					$zym_102 = $zym_64[$zym_66]['Jihua_link'];
+					if($zym_111>$zym_110)
 					{
-						$zym_80 = $this->getjihua($zym_92);
-						$zym_78 = $this->getclick($zym_95);
-					}
-					else
-					{
-						if($zym_82)
+						if($zym_80==3)
 						{
-							$zym_78 = $this->getqueqiao($zym_95);
+							$zym_101 = $this->getqueqiao($zym_103);
 						}
 						else
 						{
-							$zym_78 = $this->getclick($zym_95);
+							$zym_101 = 'http://uland.taobao.com/coupon/edetail?activityId='.$zym_104.'&pid='.$zym_86['hightpid'].'&itemId='.$zym_103.'&src=cd_cdll';
 						}
 					}
-					$zym_79 = 'http://taoquan.taobao.com/coupon/unify_apply.htm?sellerId='.$zym_92.'&activityId='.$zym_96;
-					$zym_83 = 'http://h5.m.taobao.com/ump/coupon/detail/index.html?sellerId='.$zym_92.'&activityId='.$zym_96;
-					$zym_84 = round(($zym_63/$zym_59)*10,1);
-					$zym_88 = C('ftx_coupon_add_time');
-					if($zym_88)
+					if($zym_110>$zym_111)
 					{
-						$zym_87 = (int)(time()+$zym_88*3600);
+						if($zym_102)
+						{
+							if($zym_80 ==2 || $zym_80 ==3)
+							{
+								$zym_93 = $this->getjihua($zym_103);
+							}
+							if($zym_80==3)
+							{
+								$zym_101 = $this->getclick($zym_103);
+							}
+							else
+							{
+								$zym_101 = 'http://uland.taobao.com/coupon/edetail?activityId='.$zym_104.'&pid='.$zym_86['hightpid'].'&itemId='.$zym_103.'&src=cd_cdll&dx=1';
+							}
+						}
+						else
+						{
+							if($zym_80==3)
+							{
+								$zym_101 = $this->getclick($zym_103);
+							}
+							else
+							{
+								$zym_101 = 'http://uland.taobao.com/coupon/edetail?activityId='.$zym_104.'&pid='.$zym_86['hightpid'].'&itemId='.$zym_103.'&src=cd_cdll';
+							}
+						}
+					}
+					$zym_92 = $zym_113;
+					$zym_91 = $zym_72*$zym_92/100;
+					$zym_89 = number_format($zym_91,1);
+					$zym_90 = 'http://taoquan.taobao.com/coupon/unify_apply.htm?sellerId='.$zym_106.'&activityId='.$zym_104;
+					$zym_94 = 'http://h5.m.taobao.com/ump/coupon/detail/index.html?sellerId='.$zym_106.'&activityId='.$zym_104;
+					$zym_95 = round(($zym_72/$zym_67)*10,1);
+					$zym_100 = C('ftx_coupon_add_time');
+					if($zym_100)
+					{
+						$zym_99 = (int)(time()+$zym_100*3600);
 					}
 					else
 					{
-						$zym_87 = (int)(time()+72*86400);
+						$zym_99 = (int)(time()+72*86400);
 					}
-					if($zym_91==1)
+					if($zym_105==1)
 					{
-						$zym_66 = C('ftx_fz');
+						$zym_75 = C('ftx_fz');
 					}
-					if($zym_91==2)
+					if($zym_105==2)
 					{
-						$zym_66 = C('ftx_my');
+						$zym_75 = C('ftx_my');
 					}
-					if($zym_91==3)
+					if($zym_105==3)
 					{
-						$zym_66 = C('ftx_hzp');
+						$zym_75 = C('ftx_hzp');
 					}
-					if($zym_91==4)
+					if($zym_105==4)
 					{
-						$zym_66 = C('ftx_jj');
+						$zym_75 = C('ftx_jj');
 					}
-					if($zym_91==5)
+					if($zym_105==5)
 					{
-						$zym_66 = C('ftx_xbps');
+						$zym_75 = C('ftx_xbps');
 					}
-					if($zym_91==6)
+					if($zym_105==6)
 					{
-						$zym_66 = C('ftx_ms');
+						$zym_75 = C('ftx_ms');
 					}
-					if($zym_91==7)
+					if($zym_105==7)
 					{
-						$zym_66 = C('ftx_wtcp');
+						$zym_75 = C('ftx_wtcp');
 					}
-					if($zym_91==8)
+					if($zym_105==8)
 					{
-						$zym_66 = C('ftx_smjd');
+						$zym_75 = C('ftx_smjd');
 					}
-					$zym_86 = d('items')->get_tags_by_title($zym_97);
-					$zym_85 = implode(',',$zym_86);
-					$zym_52['item_type']=2;
-					$zym_52['q_sur']=$zym_76;
-					$zym_52['q_has']=$zym_77;
-					$zym_52['q_price']=$zym_94;
-					$zym_52['q_time']=$zym_60;
-					$zym_52['pc_url']=$zym_79;
-					$zym_52['wap_url']=$zym_83;
-					$zym_52['q_info']=$zym_93;
-					$zym_52['shop_type']=$zym_61;
-					$zym_52['tags']=$zym_85;
-					$zym_52['price']=$zym_59;
-					$zym_52['volume']=$zym_101;
-					$zym_52['desc']= getdesc($zym_95);
-					$zym_52['intro']=$zym_99;
-					$zym_52['coupon_rate']=$zym_84*1000;
-					$zym_52['sellerId']=$zym_92;
-					$zym_52['title']=$zym_97;
-					$zym_52['click_url']=$zym_78;
-					$zym_52['num_iid']= $zym_95;
-					$zym_52['pic_url']=$zym_98;
-					$zym_52['coupon_price']=$zym_63;
-					$zym_52['cate_id']=$zym_66;
-					$zym_52['coupon_end_time']=$zym_87;
+					$zym_98 = d('items')->get_tags_by_title($zym_114);
+					$zym_96 = implode(',',$zym_98);
+					$zym_97['item_type']=2;
+					$zym_97['q_sur']=$zym_69;
+					$zym_97['q_has']=$zym_88;
+					$zym_97['q_price']=$zym_112;
+					$zym_97['q_time']=$zym_68;
+					$zym_97['pc_url']=$zym_90;
+					$zym_97['wap_url']=$zym_94;
+					$zym_97['q_info']=$zym_107;
+					$zym_97['shop_type']=$zym_70;
+					$zym_97['tags']=$zym_96;
+					$zym_97['price']=$zym_67;
+					$zym_97['volume']=$zym_108;
+					$zym_97['desc']= getdesc($zym_103);
+					$zym_97['intro']=$zym_109;
+					$zym_97['coupon_rate']=$zym_95*1000;
+					$zym_97['sellerId']=$zym_106;
+					$zym_97['title']=$zym_114;
+					$zym_97['click_url']=$zym_101;
+					$zym_97['num_iid']= $zym_103;
+					$zym_97['pic_url']=$zym_115;
+					$zym_97['coupon_price']=$zym_72;
+					$zym_97['cate_id']=$zym_75;
+					$zym_97['coupon_end_time']=$zym_99;
 					;
-					$zym_52['coupon_start_time']=time();
-					if($zym_95 && $zym_66 && $zym_76)
+					$zym_97['coupon_start_time']=time();
+					if($zym_103 && $zym_75 && $zym_69 && $zym_89>=$zym_85 && $zym_101)
 					{
-						$zym_51['item_list'][]=$zym_52;
+						$zym_59['item_list'][]=$zym_97;
 					}
 				}
 			}
-			if($zym_73>$zym_57)
+			if($zym_83>$zym_65)
 			{
 				$this->ajaxReturn(0, '已经采集完成！请返回，谢谢');
 			}
-			$zym_54=0;
-			foreach ($zym_51['item_list'] as $zym_18 => $zym_17) 
+			$zym_61=0;
+			foreach ($zym_59['item_list'] as $zym_58 => $zym_20) 
 			{
-				$zym_16= $this->_ajax_tb_publish_insert($zym_17);
-				if($zym_16>0)
+				$zym_21= $this->_ajax_tb_publish_insert($zym_20);
+				if($zym_21>0)
 				{
-					$zym_54++;
+					$zym_61++;
 				}
-				$zym_72++;
+				$zym_74++;
 			}
-			F('totalcoll',$zym_72);
-			$this->assign('p',$zym_73);
-			$this->assign('totalnum', $zym_57);
-			$this->assign('totalcoll', $zym_72);
-			$zym_14 = $this->fetch('collect');
-			$this->ajaxReturn(1, '', $zym_14);
+			F('totalcoll',$zym_74);
+			$this->assign('p',$zym_83);
+			$this->assign('lowyj',$zym_85);
+			$this->assign('totalnum', $zym_65);
+			$this->assign('totalcoll', $zym_74);
+			$zym_19 = $this->fetch('collect');
+			$this->ajaxReturn(1, '', $zym_19);
 		}
 	}
-	private function _ajax_tb_publish_insert($zym_15) 
+	private function _ajax_tb_publish_insert($zym_18) 
 	{
-		$zym_15['title']=trim(strip_tags($zym_15['title']));
-		$zym_51 = D('items')->ajax_tb_publish($zym_15);
-		return $zym_51;
+		$zym_18['title']=trim(strip_tags($zym_18['title']));
+		$zym_59 = D('items')->ajax_tb_publish($zym_18);
+		return $zym_59;
 	}
-	public function getjihua($zym_92)
+	public function getjihua($zym_106)
 	{
-		$zym_19 = C('ftx_cookie');
-		$zym_20 = array(' ','　','' . "\xa" . '','' . "\xd" . '','' . "\x9" . '');
-		$zym_24 = array("","","","","");
-		$zym_19 = str_replace($zym_20, $zym_24, $zym_19);
-		$zym_23 =get_word($zym_19,'_tb_token_=',';');
-		$zym_22 = get_word($zym_19,'t=',';');
-		$zym_21 = get_word($zym_19,'cna=',';');
-		$zym_13 = get_word($zym_19,'l=',';');
-		$zym_12 = get_word($zym_19,'mm-guidance3',';');
-		$zym_5 = get_word($zym_19,'_umdata=',';');
-		$zym_4 = get_word($zym_19,'cookie2=',';');
-		$zym_3 = get_word($zym_19,'cookie32=',';');
-		$zym_1 = get_word($zym_19,'cookie31=',';');
-		$zym_2 = get_word($zym_19,'alimamapwag=',';');
-		$zym_6 = get_word($zym_19,'login=',';');
-		$zym_7 = get_word($zym_19,'alimamapw=',';');
-		$zym_11 = 't='.$zym_22.';cna='.$zym_21.';l='.$zym_13.';mm-guidance3='.$zym_12.';_umdata='.$zym_5.';cookie2='.$zym_4.';_tb_token_='.$zym_23.';v=0;cookie32='.$zym_3.';cookie31='.$zym_1.';alimamapwag='.$zym_2.';login='.$zym_6.';alimamapw='.$zym_7;
-		$zym_10 =microtime(true)*1000;
-		$zym_10 = explode('.', $zym_10);
-		$zym_9 = '爱挑挑网站联盟万人齐推广，希望申请定向计划佣金，长期在线招商QQ：1259814898';
-		$zym_8 = 'http://pub.alimama.com/pubauc/getCommonCampaignDetails.json?oriMemberid='.$zym_92.'&t='.$zym_10[0].'&_tb_token_='.$zym_23.'&_input_charset=utf-8';
-		$zym_25 = curl_init();
-		curl_setopt($zym_25, CURLOPT_URL, $zym_8);
-		curl_setopt($zym_25, CURLOPT_REFERER, 'http://www.alimama.com/index.htm');
-		curl_setopt($zym_25, CURLOPT_HTTPHEADER, array( 'Cookie:{'.$zym_11.'}', ));
-		curl_setopt($zym_25, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($zym_25, CURLOPT_FOLLOWLOCATION, 1);
-		$zym_65 = curl_exec($zym_25);
-		curl_close($zym_25);
-		$zym_26 = json_decode($zym_65,true);
-		$zym_44 = count($zym_26['data']['campaignList']);
-		if($zym_44==1)
+		$zym_16 = C('ftx_cookie');
+		$zym_17 = array(' ','　','' . "\xa" . '','' . "\xd" . '','' . "\x9" . '');
+		$zym_22 = array("","","","","");
+		$zym_16 = str_replace($zym_17, $zym_22, $zym_16);
+		$zym_23 =get_word($zym_16,'_tb_token_=',';');
+		$zym_28 = get_word($zym_16,'t=',';');
+		$zym_27 = get_word($zym_16,'cna=',';');
+		$zym_26 = get_word($zym_16,'l=',';');
+		$zym_24 = get_word($zym_16,'mm-guidance3',';');
+		$zym_25 = get_word($zym_16,'_umdata=',';');
+		$zym_15 = get_word($zym_16,'cookie2=',';');
+		$zym_14 = get_word($zym_16,'cookie32=',';');
+		$zym_5 = get_word($zym_16,'cookie31=',';');
+		$zym_6 = get_word($zym_16,'alimamapwag=',';');
+		$zym_4 = get_word($zym_16,'login=',';');
+		$zym_3 = get_word($zym_16,'alimamapw=',';');
+		$zym_1 = 't='.$zym_28.';cna='.$zym_27.';l='.$zym_26.';mm-guidance3='.$zym_24.';_umdata='.$zym_25.';cookie2='.$zym_15.';_tb_token_='.$zym_23.';v=0;cookie32='.$zym_14.';cookie31='.$zym_5.';alimamapwag='.$zym_6.';login='.$zym_4.';alimamapw='.$zym_3;
+		$zym_2 =microtime(true)*1000;
+		$zym_2 = explode('.', $zym_2);
+		$zym_7 = '淘宝客高手网站联盟由杨他他发起上万人齐推广，希望申请定向计划佣金，长期在线招商QQ群：457872439';
+		$zym_8 = 'http://pub.alimama.com/pubauc/getCommonCampaignDetails.json?oriMemberid='.$zym_106.'&t='.$zym_2[0].'&_tb_token_='.$zym_23.'&_input_charset=utf-8';
+		$zym_13 = curl_init();
+		curl_setopt($zym_13, CURLOPT_URL, $zym_8);
+		curl_setopt($zym_13, CURLOPT_REFERER, 'http://www.alimama.com/index.htm');
+		curl_setopt($zym_13, CURLOPT_HTTPHEADER, array( 'Cookie:{'.$zym_1.'}', ));
+		curl_setopt($zym_13, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($zym_13, CURLOPT_FOLLOWLOCATION, 1);
+		$zym_73 = curl_exec($zym_13);
+		curl_close($zym_13);
+		$zym_12 = json_decode($zym_73,true);
+		$zym_11 = count($zym_12['data']['campaignList']);
+		if($zym_11==1)
 		{
-			$zym_43 = $zym_26['data']['campaignList'][0]['CampaignID'];
-			$zym_42 = $zym_26['data']['campaignList'][0]['ShopKeeperID'];
-			$zym_40 = $zym_26['data']['campaignList'][0]['Exist'];
+			$zym_9 = $zym_12['data']['campaignList'][0]['CampaignID'];
+			$zym_10 = $zym_12['data']['campaignList'][0]['ShopKeeperID'];
+			$zym_29 = $zym_12['data']['campaignList'][0]['Exist'];
 		}
 		else
 		{
-			for($zym_58=0;$zym_58<$zym_44;$zym_58++)
+			for($zym_66=0;$zym_66<$zym_11;$zym_66++)
 			{
-				$zym_41 = $zym_58+1;
-				if($zym_41==$zym_44)
+				$zym_30 = $zym_66+1;
+				if($zym_30==$zym_11)
 				{
-					$zym_45 .= $zym_26['data']['campaignList'][$zym_58]['AvgCommission']*100;
+					$zym_50 .= $zym_12['data']['campaignList'][$zym_66]['AvgCommission']*100;
 				}
 				else
 				{
-					$zym_45 .= ($zym_26['data']['campaignList'][$zym_58]['AvgCommission']*100).',';
+					$zym_50 .= ($zym_12['data']['campaignList'][$zym_66]['AvgCommission']*100).',';
 				}
 			}
-			$zym_45 = str_replace($zym_20, $zym_24, $zym_45);
-			$zym_46 = explode(',', $zym_45);
-			$zym_50 = array_search(max($zym_46), $zym_46);
-			$zym_43 = $zym_26['data']['campaignList'][$zym_50]['CampaignID'];
-			$zym_42 = $zym_26['data']['campaignList'][$zym_50]['ShopKeeperID'];
-			$zym_40 = $zym_26['data']['campaignList'][$zym_50]['Exist'];
+			$zym_50 = str_replace($zym_17, $zym_22, $zym_50);
+			$zym_49 = explode(',', $zym_50);
+			$zym_48 = array_search(max($zym_49), $zym_49);
+			$zym_9 = $zym_12['data']['campaignList'][$zym_48]['CampaignID'];
+			$zym_10 = $zym_12['data']['campaignList'][$zym_48]['ShopKeeperID'];
+			$zym_29 = $zym_12['data']['campaignList'][$zym_48]['Exist'];
 		}
-		if(!$zym_40)
+		if(!$zym_29)
 		{
-			$zym_49 = 'http://pub.alimama.com/pubauc/applyForCommonCampaign.json';
-			$zym_48 = array( '_tb_token_'=>$zym_23, 'applyreason'=>$zym_9, 'campId'=>$zym_43, 'keeperid'=>$zym_42, 't'=>$zym_10[0], );
-			$zym_48 = http_build_query($zym_48);
-			$zym_47 = curl_init();
-			$zym_39 = 500;
-			curl_setopt($zym_47, CURLOPT_URL, $zym_49);
-			curl_setopt($zym_47, CURLOPT_REFERER, 'http://www.alimama.com/index.htm');
-			curl_setopt($zym_47, CURLOPT_POST, true);
-			curl_setopt($zym_47, CURLOPT_HTTPHEADER, array( 'Cookie:{'.$zym_11.'}', ));
-			curl_setopt($zym_47, CURLOPT_POSTFIELDS, $zym_48);
-			curl_setopt($zym_47, CURLOPT_RETURNTRANSFER, 1);
-			curl_setopt($zym_47, CURLOPT_CONNECTTIMEOUT, $zym_39);
-			$zym_38 = curl_exec($zym_47);
-			curl_close($zym_47);
+			$zym_46 = 'http://pub.alimama.com/pubauc/applyForCommonCampaign.json';
+			$zym_47 = array( '_tb_token_'=>$zym_23, 'applyreason'=>$zym_7, 'campId'=>$zym_9, 'keeperid'=>$zym_10, 't'=>$zym_2[0], );
+			$zym_47 = http_build_query($zym_47);
+			$zym_51 = curl_init();
+			$zym_52 = 500;
+			curl_setopt($zym_51, CURLOPT_URL, $zym_46);
+			curl_setopt($zym_51, CURLOPT_REFERER, 'http://www.alimama.com/index.htm');
+			curl_setopt($zym_51, CURLOPT_POST, true);
+			curl_setopt($zym_51, CURLOPT_HTTPHEADER, array( 'Cookie:{'.$zym_1.'}', ));
+			curl_setopt($zym_51, CURLOPT_POSTFIELDS, $zym_47);
+			curl_setopt($zym_51, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($zym_51, CURLOPT_CONNECTTIMEOUT, $zym_52);
+			$zym_57 = curl_exec($zym_51);
+			curl_close($zym_51);
 		}
-		return $zym_38;
+		return $zym_57;
 	}
-	public function getqueqiao($zym_95)
+	public function getqueqiao($zym_103)
 	{
-		$zym_19 = C('ftx_cookie');
-		$zym_20 = array(' ','　','' . "\xa" . '','' . "\xd" . '','' . "\x9" . '');
-		$zym_24 = array("","","","","");
-		$zym_19 = str_replace($zym_20, $zym_24, $zym_19);
-		$zym_23 =get_word($zym_19,'_tb_token_=',';');
-		$zym_22 = get_word($zym_19,'t=',';');
-		$zym_21 = get_word($zym_19,'cna=',';');
-		$zym_13 = get_word($zym_19,'l=',';');
-		$zym_12 = get_word($zym_19,'mm-guidance3',';');
-		$zym_5 = get_word($zym_19,'_umdata=',';');
-		$zym_4 = get_word($zym_19,'cookie2=',';');
-		$zym_3 = get_word($zym_19,'cookie32=',';');
-		$zym_1 = get_word($zym_19,'cookie31=',';');
-		$zym_2 = get_word($zym_19,'alimamapwag=',';');
-		$zym_6 = get_word($zym_19,'login=',';');
-		$zym_7 = get_word($zym_19,'alimamapw=',';');
-		$zym_11 = 't='.$zym_22.';cna='.$zym_21.';l='.$zym_13.';mm-guidance3='.$zym_12.';_umdata='.$zym_5.';cookie2='.$zym_4.';_tb_token_='.$zym_23.';v=0;cookie32='.$zym_3.';cookie31='.$zym_1.';alimamapwag='.$zym_2.';login='.$zym_6.';alimamapw='.$zym_7;
-		$zym_10 =microtime(true)*1000;
-		$zym_10 = explode('.', $zym_10);
-		$zym_31 = get_client_ip();
-		$zym_30 = '19_'.$zym_31.'_366_1468693605455';
-		$zym_29 = C('ftx_youpid');
-		$zym_27 = explode('_',$zym_29);
-		$zym_28 = $zym_27[2];
-		$zym_32 = $zym_27[3];
-		$zym_33 = 'http://pub.alimama.com/common/code/getAuctionCode.json?auctionid='.$zym_95.'&adzoneid='.$zym_32.'&siteid='.$zym_28.'&scenes=3&channel=tk_qqhd&t='.$zym_10[0].'&_tb_token_='.$zym_23.'&pvid='.$zym_30;
-        $zym_37 = curl_init();
-		curl_setopt($zym_37, CURLOPT_URL, $zym_33);
-		curl_setopt($zym_37, CURLOPT_REFERER, 'http://pub.alimama.com/promo/item/channel/index.htm?channel=qqhd');
-		curl_setopt($zym_37, CURLOPT_HTTPHEADER, array( 'Cookie:{'.$zym_11.'}', ));
-		curl_setopt($zym_37, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($zym_37, CURLOPT_FOLLOWLOCATION, 1);
-		$zym_36 = curl_exec($zym_37);
-		curl_close($zym_37);
-		$zym_35 = json_decode($zym_36,true);
-		if($zym_35)
+		$zym_16 = C('ftx_cookie');
+		$zym_17 = array(' ','　','' . "\xa" . '','' . "\xd" . '','' . "\x9" . '');
+		$zym_22 = array("","","","","");
+		$zym_16 = str_replace($zym_17, $zym_22, $zym_16);
+		$zym_23 =get_word($zym_16,'_tb_token_=',';');
+		$zym_28 = get_word($zym_16,'t=',';');
+		$zym_27 = get_word($zym_16,'cna=',';');
+		$zym_26 = get_word($zym_16,'l=',';');
+		$zym_24 = get_word($zym_16,'mm-guidance3',';');
+		$zym_25 = get_word($zym_16,'_umdata=',';');
+		$zym_15 = get_word($zym_16,'cookie2=',';');
+		$zym_14 = get_word($zym_16,'cookie32=',';');
+		$zym_5 = get_word($zym_16,'cookie31=',';');
+		$zym_6 = get_word($zym_16,'alimamapwag=',';');
+		$zym_4 = get_word($zym_16,'login=',';');
+		$zym_3 = get_word($zym_16,'alimamapw=',';');
+		$zym_1 = 't='.$zym_28.';cna='.$zym_27.';l='.$zym_26.';mm-guidance3='.$zym_24.';_umdata='.$zym_25.';cookie2='.$zym_15.';_tb_token_='.$zym_23.';v=0;cookie32='.$zym_14.';cookie31='.$zym_5.';alimamapwag='.$zym_6.';login='.$zym_4.';alimamapw='.$zym_3;
+		$zym_2 =microtime(true)*1000;
+		$zym_2 = explode('.', $zym_2);
+		$zym_56 = get_client_ip();
+		$zym_55 = '19_'.$zym_56.'_366_1468693605455';
+		$zym_53 = C('ftx_youpid');
+		$zym_54 = explode('_',$zym_53);
+		$zym_45 = $zym_54[2];
+		$zym_44 = $zym_54[3];
+		$zym_35 = 'http://pub.alimama.com/common/code/getAuctionCode.json?auctionid='.$zym_103.'&adzoneid='.$zym_44.'&siteid='.$zym_45.'&scenes=3&channel=tk_qqhd&t='.$zym_2[0].'&_tb_token_='.$zym_23.'&pvid='.$zym_55;
+		$zym_36 = curl_init();
+		curl_setopt($zym_36, CURLOPT_URL, $zym_35);
+		curl_setopt($zym_36, CURLOPT_REFERER, 'http://pub.alimama.com/promo/item/channel/index.htm?channel=qqhd');
+		curl_setopt($zym_36, CURLOPT_HTTPHEADER, array( 'Cookie:{'.$zym_1.'}', ));
+		curl_setopt($zym_36, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($zym_36, CURLOPT_FOLLOWLOCATION, 1);
+		$zym_34 = curl_exec($zym_36);
+		curl_close($zym_36);
+		$zym_33 = json_decode($zym_34,true);
+		if($zym_33)
 		{
-			$zym_34 = $zym_35['data']['shortLinkUrl'];
+			$zym_31 = $zym_33['data']['shortLinkUrl'];
 		}
-		return $zym_34;
+		return $zym_31;
 	}
-	public function getclick($zym_95)
+	public function getclick($zym_103)
 	{
-		$zym_19 = C('ftx_cookie');
-		$zym_20 = array(' ','　','' . "\xa" . '','' . "\xd" . '','' . "\x9" . '');
-		$zym_24 = array("","","","","");
-		$zym_19 = str_replace($zym_20, $zym_24, $zym_19);
-		$zym_23 =get_word($zym_19,'_tb_token_=',';');
-		$zym_22 = get_word($zym_19,'t=',';');
-		$zym_21 = get_word($zym_19,'cna=',';');
-		$zym_13 = get_word($zym_19,'l=',';');
-		$zym_12 = get_word($zym_19,'mm-guidance3',';');
-		$zym_5 = get_word($zym_19,'_umdata=',';');
-		$zym_4 = get_word($zym_19,'cookie2=',';');
-		$zym_3 = get_word($zym_19,'cookie32=',';');
-		$zym_1 = get_word($zym_19,'cookie31=',';');
-		$zym_2 = get_word($zym_19,'alimamapwag=',';');
-		$zym_6 = get_word($zym_19,'login=',';');
-		$zym_7 = get_word($zym_19,'alimamapw=',';');
-		$zym_11 = 't='.$zym_22.';cna='.$zym_21.';l='.$zym_13.';mm-guidance3='.$zym_12.';_umdata='.$zym_5.';cookie2='.$zym_4.';_tb_token_='.$zym_23.';v=0;cookie32='.$zym_3.';cookie31='.$zym_1.';alimamapwag='.$zym_2.';login='.$zym_6.';alimamapw='.$zym_7;
-		$zym_10 =microtime(true)*1000;
-		$zym_10 = explode('.', $zym_10);
-		$zym_29 = C('ftx_youpid');
-		$zym_27 = explode('_',$zym_29);
-		$zym_28 = $zym_27[2];
-		$zym_32 = $zym_27[3];
-		$zym_31 = get_client_ip();
-		$zym_30 = '50_'.$zym_31.'_15881_1468693605455';
-		$zym_33 = 'http://pub.alimama.com/common/code/getAuctionCode.json?auctionid='.$zym_95.'&adzoneid='.$zym_32.'&siteid='.$zym_28.'&t='.$zym_10[0].'&pvid='.$zym_30.'&_tb_token_='.$zym_23.'&_input_charset=utf-8';
-        $zym_37 = curl_init();
-		curl_setopt($zym_37, CURLOPT_URL, $zym_33);
-		curl_setopt($zym_37, CURLOPT_REFERER, 'http://www.alimama.com/index.htm');
-		curl_setopt($zym_37, CURLOPT_HTTPHEADER, array( 'Cookie:{'.$zym_11.'}', ));
-		curl_setopt($zym_37, CURLOPT_RETURNTRANSFER, true);
-		curl_setopt($zym_37, CURLOPT_FOLLOWLOCATION, 1);
-		$zym_36 = curl_exec($zym_37);
-		curl_close($zym_37);
-		$zym_35 = json_decode($zym_36,true);
-		$zym_78 = $zym_35['data']['shortLinkUrl'];
-		return $zym_78;
+		$zym_16 = C('ftx_cookie');
+		$zym_17 = array(' ','　','' . "\xa" . '','' . "\xd" . '','' . "\x9" . '');
+		$zym_22 = array("","","","","");
+		$zym_16 = str_replace($zym_17, $zym_22, $zym_16);
+		$zym_23 =get_word($zym_16,'_tb_token_=',';');
+		$zym_28 = get_word($zym_16,'t=',';');
+		$zym_27 = get_word($zym_16,'cna=',';');
+		$zym_26 = get_word($zym_16,'l=',';');
+		$zym_24 = get_word($zym_16,'mm-guidance3',';');
+		$zym_25 = get_word($zym_16,'_umdata=',';');
+		$zym_15 = get_word($zym_16,'cookie2=',';');
+		$zym_14 = get_word($zym_16,'cookie32=',';');
+		$zym_5 = get_word($zym_16,'cookie31=',';');
+		$zym_6 = get_word($zym_16,'alimamapwag=',';');
+		$zym_4 = get_word($zym_16,'login=',';');
+		$zym_3 = get_word($zym_16,'alimamapw=',';');
+		$zym_1 = 't='.$zym_28.';cna='.$zym_27.';l='.$zym_26.';mm-guidance3='.$zym_24.';_umdata='.$zym_25.';cookie2='.$zym_15.';_tb_token_='.$zym_23.';v=0;cookie32='.$zym_14.';cookie31='.$zym_5.';alimamapwag='.$zym_6.';login='.$zym_4.';alimamapw='.$zym_3;
+		$zym_2 =microtime(true)*1000;
+		$zym_2 = explode('.', $zym_2);
+		$zym_53 = C('ftx_youpid');
+		$zym_54 = explode('_',$zym_53);
+		$zym_45 = $zym_54[2];
+		$zym_44 = $zym_54[3];
+		$zym_56 = get_client_ip();
+		$zym_55 = '50_'.$zym_56.'_15881_1468693605455';
+		$zym_35 = 'http://pub.alimama.com/common/code/getAuctionCode.json?auctionid='.$zym_103.'&adzoneid='.$zym_44.'&siteid='.$zym_45.'&t='.$zym_2[0].'&pvid='.$zym_55.'&_tb_token_='.$zym_23.'&_input_charset=utf-8';
+		$zym_36 = curl_init();
+		curl_setopt($zym_36, CURLOPT_URL, $zym_35);
+		curl_setopt($zym_36, CURLOPT_REFERER, 'http://www.alimama.com/index.htm');
+		curl_setopt($zym_36, CURLOPT_HTTPHEADER, array( 'Cookie:{'.$zym_1.'}', ));
+		curl_setopt($zym_36, CURLOPT_RETURNTRANSFER, true);
+		curl_setopt($zym_36, CURLOPT_FOLLOWLOCATION, 1);
+		$zym_34 = curl_exec($zym_36);
+		curl_close($zym_36);
+		$zym_33 = json_decode($zym_34,true);
+		$zym_101 = $zym_33['data']['shortLinkUrl'];
+		return $zym_101;
+	}
+	public function check_ip()
+	{
+		$zym_32 = I('ip','','trim');
+		$zym_18 = $this->check_proxy_ip($zym_32);
+		$zym_37 = '共尝试连接'.$zym_18['times'].'次，成功['.$zym_18['succeed_times'].']次，失败['.$zym_18['defeat_times'].']次，总用时'.$zym_18['total_spen'].'秒。';
+		$this->ajaxReturn(1,l('operation_success'),$zym_37);
+	}
+	public function check_proxy_ip($zym_38=false, $zym_99=5) 
+	{
+		$zym_43 = array( 'accept: application/json', 'accept-encoding: gzip, deflate', 'accept-language: en-US,en;q=0.8', 'content-type: application/json', 'user-agent: Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.106 Safari/537.36', );
+		$zym_8 = 'http://www.baidu.com/';
+		$zym_59['times'] = $zym_99;
+		$zym_59['succeed_times'] = 0;
+		$zym_59['defeat_times'] = 0;
+		$zym_59['total_spen'] = 0;
+		for ($zym_66=0; $zym_66 < $zym_99; $zym_66++) 
+		{
+			$zym_42 = microtime();
+			$zym_41 = curl_init();
+			curl_setopt($zym_41, CURLOPT_URL, $zym_8);
+			curl_setopt($zym_41, CURLOPT_HTTPHEADER, $zym_43);
+			curl_setopt($zym_41, CURLOPT_RETURNTRANSFER, 1);
+			curl_setopt($zym_41, CURLOPT_ENCODING, 'gzip,deflate');
+			curl_setopt($zym_41, CURLOPT_SSL_VERIFYPEER, false);
+			curl_setopt($zym_41, CURLOPT_SSL_VERIFYHOST, false);
+			if (@$zym_38 != false) 
+			{
+				curl_setopt($zym_41, CURLOPT_HTTPHEADER, array ( 'Client_Ip: '.mt_rand(0, 255).'.'.mt_rand(0, 255).'.'.mt_rand(0, 255).'.'.mt_rand(0, 255), ));
+				curl_setopt($zym_41, CURLOPT_HTTPHEADER, array ( 'X-Forwarded-For: '.mt_rand(0, 255).'.'.mt_rand(0, 255).'.'.mt_rand(0, 255).'.'.mt_rand(0, 255), ));
+				curl_setopt($zym_41, CURLOPT_PROXYTYPE, CURLPROXY_HTTP);
+				curl_setopt($zym_41, CURLOPT_PROXY, $zym_38);
+			}
+			curl_setopt($zym_41, CURLOPT_COOKIEFILE, dirname(__FILE__).'/cookie.txt');
+			curl_setopt($zym_41, CURLOPT_COOKIEJAR, dirname(__FILE__).'/cookie.txt');
+			curl_setopt($zym_41, CURLOPT_TIMEOUT, 30);
+			$zym_39 = curl_exec($zym_41);
+			if (strstr($zym_39, '百度一下，你就知道')) 
+			{
+				$zym_59['list'][$zym_66]['status'] = 1;
+				$zym_59['succeed_times'] += 1;
+			}
+			else 
+			{
+				$zym_59['list'][$zym_66]['status'] = 0;
+				$zym_59['defeat_times'] += 1;
+			}
+			$zym_40 = microtime();
+			$zym_59['total_spen'] += abs($zym_40-$zym_42);
+			$zym_59['list'][$zym_66]['spen'] = abs($zym_40-$zym_42);
+			$zym_59['list'][$zym_66]['content'] = json_encode($zym_39, true);
+		}
+		$zym_59['precent'] = (number_format($zym_59['succeed_times']/$zym_99, 4)*100).'%';
+		$zym_59['average_spen'] = number_format($zym_59['total_spen']/$zym_99, 4);
+		return $zym_59;
 	}
 }
 ?>

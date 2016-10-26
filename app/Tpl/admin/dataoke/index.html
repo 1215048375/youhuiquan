@@ -1,7 +1,6 @@
 <include file="public:header" />
 <div class="subnav">
-    <h1 class="title_2 line_x">大淘客全站优惠券API采集优惠券
-	</h1>
+    <h1 class="title_2 line_x">大淘客全站优惠券API采集优惠券</h1>
 </div>
 <div class="pad_lr_10">
     <form id="J_info_form" action="{:U('dataoke/setting')}" method="post">
@@ -19,20 +18,34 @@
 				<input type="btn" value="合并数据" class="smt mr10" id="getitem">		
 			</td>
 		</tr>
-		
-		
+		<tr>
+            <th>采集模式 :</th>
+           <td>
+           <select name="mod">		  
+		    <option value="1">模式一</option>
+			<option value="2">模式二</option>
+			<option value="3">模式三</option>			
+            </select>			
+           </td>		   
+        </tr>		
 		<tr>
            <th>起始位置 :</th>           
 		   <td>
 		   <input name="page" id="page" type="text" class="input-text" size="10" value="1"/>&nbsp;&nbsp;采集过程中长时间卡停无反应，可记住停顿位置，直接输入上次位置接着采集。
 		   </td>
         </tr>
+		<tr>		
+		<th>模式说明 :</th>
+		<td>
+		&nbsp;&nbsp;<span class="red">模式一，速度 最快，不需要阿里妈妈cookies，推广链接生成二合一地址，不自动申请定向计划；模式二，速度一般，在模式一的基础上增加自动申请定向计划，需要阿里妈妈cookies，配合代理IP使用；模式三，速度稍慢，自动获取推广链接并申请定向计划，需要阿里妈妈cookies，配合代理IP使用。</span>
+		</td>
+		</tr>
         <tr>
             <th>第二步：</th>
             <td><input type="submit" value="采集商品" name="dosubmit" class="smt mr10"></td>
         </tr>		
 		
-    </table>    
+    </table>   
     </form>	
 </div>
 <include file="public:footer" />
@@ -40,11 +53,11 @@
 $(function(){
     var collect_url = "{:U('dataoke/collect')}";
     $('#J_info_form').ajaxForm({success:complete, dataType:'json'});
-    var p = document.getElementById("page").value;
+    var p = document.getElementById("page").value;;
     function complete(result){
         if(result.status == 1){
             $.dialog({id:'dataoke', title:result.msg, content:result.data, padding:'', lock:true});
-            p = document.getElementById("page").value;
+            p = document.getElementById("page").value;;
             collect_page();
         } else {
             $.yangtata.tip({content:result.msg, icon:'alert'});
@@ -54,18 +67,8 @@ $(function(){
         $.getJSON(collect_url, {p:p}, function(result){
             if(result.status == 1){
                 $.dialog.get('dataoke').content(result.data);
-                p++;
-                var s = 5;				
-				function showtime(){					
-				s--;
-				if(s==0){
-				collect_page(p);
-				}
-				}
-				clearInterval(settime); 
-				var settime = setInterval(function(){
-				showtime();
-				},1000);
+                p++;                
+				collect_page(p);				
             }else{
                 $.dialog.get('dataoke').close();
                 $.yangtata.tip({content:result.msg});
